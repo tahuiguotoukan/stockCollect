@@ -25,7 +25,7 @@ def parse_fun(fun_url):
     else:
         print('该基金数据错误:' + fun_url)
 
-url = 'http://fund.eastmoney.com/data/fundranking.html#tall;c0;r;s1yzf;pn50;ddesc;qsd20200802;qed20210802;qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'
+url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;s1yzf;pn50;ddesc;qsd20200803;qed20210803;qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 driver = webdriver.Chrome(options=chrome_options)
@@ -38,6 +38,7 @@ element = driver.find_element_by_xpath('//*[@id="showall"]')               #不�
 ActionChains(driver).click(element).perform()
 time.sleep(6)
 demo = []
+fun_names = []
 demo.append('序号')
 demo.append('基金编号')
 demo.append('基金名称')
@@ -55,57 +56,65 @@ demo.append('三年增长')
 demo.append('总体增长')
 demo.append('购买费率')
 data.append(demo)
-for i in range(1,21):
+i = 0
+while len(data) < 21:
+    print(len(data))
+    i += 1
     try:
         num = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[3]').text
-        # xuhao = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[2]').text
+        xuhao = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[2]').text
         
         name = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[4]').text
-        # date = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[5]').text
-        # danweijingzhi = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[6]').text
-        # leijijingzhi = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[7]').text
-        # day_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[8]').text
-        # week_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[9]').text
-        # month_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[10]').text
-        # three_month_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[11]').text
-        # six_month_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[12]').text
-        # year_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[13]').text
-        # two_year_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[14]').text
-        # three_year_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[15]').text
-        # all_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[17]').text
-        # fee = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[19]').text
+        date = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[5]').text
+        danweijingzhi = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[6]').text
+        leijijingzhi = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[7]').text
+        day_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[8]').text
+        week_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[9]').text
+        month_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[10]').text
+        three_month_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[11]').text
+        six_month_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[12]').text
+        year_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[13]').text
+        two_year_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[14]').text
+        three_year_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[15]').text
+        all_grow = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[17]').text
+        fee = driver.find_element_by_xpath('//*[@id="dbtable"]/tbody/tr[' + str(i) + ']/td[19]').text
         print(name)
         parse_fun(f"http://fund.eastmoney.com/{num}.html")
         
-        # temp = []
-        # temp.append(xuhao)
-        # temp.append(num)
-        # temp.append(name)
-        # temp.append(date)
-        # temp.append(danweijingzhi)
-        # temp.append(leijijingzhi)
-        # temp.append(day_grow)
-        # temp.append(week_grow)
-        # temp.append(month_grow)
-        # temp.append(three_month_grow)
-        # temp.append(six_month_grow)
-        # temp.append(year_grow)
-        # temp.append(two_year_grow)
-        # temp.append(three_year_grow)
-        # temp.append(all_grow)
-        # temp.append(fee)
-        # print(temp)
-        # data.append(temp)
+        temp = []
+        temp.append(xuhao)
+        temp.append(num)
+        temp.append(name)
+        temp.append(date)
+        temp.append(danweijingzhi)
+        temp.append(leijijingzhi)
+        temp.append(day_grow)
+        temp.append(week_grow)
+        temp.append(month_grow)
+        temp.append(three_month_grow)
+        temp.append(six_month_grow)
+        temp.append(year_grow)
+        temp.append(two_year_grow)
+        temp.append(three_year_grow)
+        temp.append(all_grow)
+        temp.append(fee)
+        
+        
+        print(temp)
+        
+        if(name not in fun_names):
+            data.append(temp)
+            fun_names.append(name)
+            
     except(error) :
         print('找不到元素，爬取结束')
-        i = i-1
+        # i = i-1
         continue    #若因为反爬虫爬取失败，则继续当前轮次的爬取
     print('当前正在爬取第'+str(i)+'条')
     
 
 print(collections.Counter(stock))
-# with open(r'E:/dataset.csv', 'w', newline='') as csvfile:
-#     writer  = csv.writer(csvfile)
-#     for row in data:
-#         writer.writerow(row)
-#print(xpath)
+with open('./基金排名.csv', 'w', newline='') as csvfile:
+    writer  = csv.writer(csvfile)
+    for row in data:
+        writer.writerow(row)
