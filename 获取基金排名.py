@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import error
+from os import write
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -8,6 +9,7 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 import collections
+import pandas as pd
 stock = []
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"
@@ -24,6 +26,10 @@ def parse_fun(fun_url):
             stock.append(name)
     else:
         print('该基金数据错误:' + fun_url)
+
+#股票统计排序规则，指定第二个元素排序
+def takeSecond(elem):
+    return elem[1]
 
 url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;s1yzf;pn50;ddesc;qsd20200803;qed20210803;qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'
 chrome_options = Options()
@@ -55,7 +61,7 @@ demo.append('两年增长')
 demo.append('三年增长')
 demo.append('总体增长')
 demo.append('购买费率')
-data.append(demo)
+# data.append(demo)
 i = 0
 while len(data) < 21:
     print(len(data))
@@ -111,10 +117,18 @@ while len(data) < 21:
         # i = i-1
         continue    #若因为反爬虫爬取失败，则继续当前轮次的爬取
     print('当前正在爬取第'+str(i)+'条')
-    
+ 
+stock_count = collections.Counter(stock)
+stock_count_arr = []
+for i in stock_count:
+    arr = []
+    arr.append(i)
+    arr.append(stock_count[i])
+    stock_count_arr.append(arr)
+stock_count_arr.sort(key=takeSecond, reverse=True)
 
-print(collections.Counter(stock))
-with open('./基金排名.csv', 'w', newline='') as csvfile:
-    writer  = csv.writer(csvfile)
-    for row in data:
-        writer.writerow(row)
+data1 = pd.DataFrame(data, columns=demo)
+data2 = pd.DataFrame(stock_count_arr, columns=['股票名称', '基金数量'])
+with pd.ExcelWriter('股票基金持仓统计.xlsx') as writer:
+    data1.to_excel(writer, sheet_name='股票型基金业绩排名前20名', index=False)
+    data2.to_excel(writer, sheet_name='业绩前20名基金持仓统计', index=False)
