@@ -31,7 +31,7 @@ def parse_fun(fun_url):
 def takeSecond(elem):
     return elem[1]
 
-url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;s1yzf;pn50;ddesc;qsd20200803;qed20210803;qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'
+url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;s1yzf;pn50;ddesc;qsd20200826;qed20210826;qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 driver = webdriver.Chrome(options=chrome_options)
@@ -129,6 +129,6 @@ stock_count_arr.sort(key=takeSecond, reverse=True)
 
 data1 = pd.DataFrame(data, columns=demo)
 data2 = pd.DataFrame(stock_count_arr, columns=['股票名称', '基金数量'])
-with pd.ExcelWriter('股票基金持仓统计.xlsx') as writer:
+with pd.ExcelWriter('20210826股票基金持仓统计.xlsx') as writer:
     data1.to_excel(writer, sheet_name='股票型基金业绩排名前20名', index=False)
     data2.to_excel(writer, sheet_name='业绩前20名基金持仓统计', index=False)
