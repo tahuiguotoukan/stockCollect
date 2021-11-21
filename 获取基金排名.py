@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from logging import error
 from os import write
 from selenium.webdriver.chrome.options import Options
@@ -10,6 +9,9 @@ import requests
 from bs4 import BeautifulSoup
 import collections
 import pandas as pd
+import datetime
+
+
 stock = []
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"
@@ -17,7 +19,7 @@ headers = {
 def parse_fun(fun_url):
     resp = requests.get(fun_url, headers)
     resp.encoding = 'utf-8'
-    soup = BeautifulSoup(resp.text, 'lxml')
+    soup = BeautifulSoup(resp.text, 'html.parser')
     trs = soup.select('#position_shares div table tr')
     print(len(trs))
     if(len(trs) > 2):
@@ -30,8 +32,9 @@ def parse_fun(fun_url):
 #股票统计排序规则，指定第二个元素排序
 def takeSecond(elem):
     return elem[1]
-
-url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;szzf;pn50;dasc;qsd20200923;qed20210923;qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'
+_date = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d')
+# url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;szzf;pn50;dasc;qsd'+_date+';qed'+_date+';qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'  #近一周跌幅基金排名排名
+url = 'http://fund.eastmoney.com/data/fundranking.html#tgp;c0;r;s1yzf;pn50;dasc;qsd'+_date+';qed'+_date+';qdii;zq;gg;gzbd;gzfs;bbzt;sfbb'  #近一个月跌幅基金排名
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 driver = webdriver.Chrome(options=chrome_options)
@@ -112,10 +115,12 @@ while len(data) < 21:
             data.append(temp)
             fun_names.append(name)
             
-    except(error) :
-        print('找不到元素，爬取结束')
+    except BaseException as a:
+        # print('找不到元素，爬取结束')
+        print(a)
         # i = i-1
         continue    #若因为反爬虫爬取失败，则继续当前轮次的爬取
+    
     print('当前正在爬取第'+str(i)+'条')
  
 stock_count = collections.Counter(stock)
@@ -129,6 +134,6 @@ stock_count_arr.sort(key=takeSecond, reverse=True)
 
 data1 = pd.DataFrame(data, columns=demo)
 data2 = pd.DataFrame(stock_count_arr, columns=['股票名称', '基金数量'])
-with pd.ExcelWriter('20210923股票基金持仓统计.xlsx') as writer:
+with pd.ExcelWriter(_date+'股票基金持仓统计.xlsx') as writer:
     data1.to_excel(writer, sheet_name='股票型基金业绩排名前20名', index=False)
     data2.to_excel(writer, sheet_name='业绩前20名基金持仓统计', index=False)
